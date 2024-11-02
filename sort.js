@@ -75,7 +75,7 @@ function InputNumFromSTDIN() {
 function InputRandomNumArray() {
     console.log("Напишите количество элементов в массиве");
     let capacity = InputNumFromSTDIN();
-    const MAX = 100;
+    const MAX = 10000;
     let array = new Array(capacity).fill(0).map(() =>
         Math.floor(Math.random() * MAX));
     return array;
@@ -137,6 +137,45 @@ function fileWork(callback, array) {
 }
 
 
+
+
+function getDigit(number, position){
+    for (let i = 0; i <= position; i++) {
+        number = Math.floor(number/10);        
+    }
+    return number % 10;
+}
+
+
+function RadixSort(array,amountOF){
+    let buffer;
+
+    for(let j =0; j< amountOF;++j){
+
+        buffer = Array.from({ length: 10 }, () => []);
+
+        for (let num of array) {
+            let digit = getDigit(num, j);
+            buffer[digit].push(num);
+        }
+
+        array  = [];
+
+        for (let innerVec of buffer) {
+            for (let num of innerVec) {
+                array.push(num);
+            }
+        }
+    }
+
+    return array;
+}
+
+
+
+
+
+
 function menu() { // должно уметь разное заполнение разный выход данных в разных форматах и выход естесна
     //выбрать заполнение один раз
     let array;
@@ -165,10 +204,25 @@ function menu() { // должно уметь разное заполнение �
                 break;
         }
     }
+    
+    //сортировка
     console.log(array);
+    
+    let max = Math.max(...array);
+    let amountOF = 0;
+    console.log(max);
 
+    while (max>0) {
+        max = Math.floor(max / 10);
+        amountOF++;
+    }
+    console.log(amountOF);
 
+    array = RadixSort(array,amountOF);
+    
+    
     // сохранение
+    console.log(array);
 
     console.log("Выберите способ сохранения:");
     outerLoop:
@@ -186,8 +240,7 @@ function menu() { // должно уметь разное заполнение �
                 array = InputNumArrayFromStDIN();
                 break outerLoop;
             case 3:
-                console.log("рандом");
-                array = InputRandomNumArray()
+                console.log("выход из меню");
                 break outerLoop;
             default:
                 console.log("команда не найдена");
@@ -227,7 +280,7 @@ function main() {
 main();
 
 
-
+ 
 
 
 
