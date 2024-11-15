@@ -17,7 +17,12 @@ function isValidFilename(filename) {
 
     // Проверка на недопустимые имена в Windows
     const invalidNames = ['CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3', 'COM4', 'COM5', 'COM6', 'COM7', 'COM8', 'COM9', 'LPT1', 'LPT2', 'LPT3', 'LPT4', 'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9'];
-    if (invalidNames.includes(filename.toUpperCase())) {
+    const baseName = filename.split('.')[0].toUpperCase();  // Получаем имя без расширения и приводим к верхнему регистру
+    if (invalidNames.includes(baseName)) {
+        return false;
+    }
+    if (!filename.endsWith(".json")) {
+        console.log("Это не JSON файл.");
         return false;
     }
 
@@ -36,6 +41,10 @@ function InputNumArrayFromStDIN() {
                 console.log(`Ошибка: содержимое "${input}" не является числом. Попробуйте снова.`);
                 return NaN;
             }
+            if (number < 0){
+                console.log(`Ошибка: содержимое "${input}" не является положительным числом или нулем. Попробуйте снова.`);
+                return NaN;
+            }
             return number;
         });
         if (numbers.includes(NaN)) {
@@ -47,6 +56,7 @@ function InputNumArrayFromStDIN() {
     }
     return array;
 }
+
 //возвращает число
 function InputNumFromSTDIN() {
     let num;
@@ -59,6 +69,13 @@ function InputNumFromSTDIN() {
                 console.log(`Ошибка: содержимое "${input}" не является числом. Попробуйте снова.`);
                 return NaN;
             }
+            //console.log(number);
+            if (number < 0){
+                console.log(`Ошибка: содержимое "${input}" не является положительным числом или нулем. Попробуйте снова.`);
+                return NaN;
+            }
+            //console.log(number);
+
             return number;
         });
         if (numbers.includes(NaN) || numbers.length > 1) {
@@ -86,6 +103,7 @@ function saveArrayToFile(filename, array) {
         const json = JSON.stringify(array);
         fs.writeFileSync(filename, json, 'utf8');
         console.log('Массив успешно записан в файл.');
+        return 1;
     } catch (err) {
         console.error('Ошибка записи массива в файл:');
         return null;
@@ -93,39 +111,49 @@ function saveArrayToFile(filename, array) {
 }
 
 function InputNumArrayFromFile(filename) {
+    let numbers;
     try {
         const data = fs.readFileSync(filename, 'utf8');
         const array = JSON.parse(data);
 
-        let numbers = array.map(number => {
+        numbers = array.map(number => {
             number = Number(number);
             if (isNaN(number)) {
                 console.log(`Ошибка: содержимое "${input}" не является числом. Попробуйте снова.`);
                 return NaN;
             }
+            if (number < 0){
+                console.log(`Ошибка: содержимое "${input}" не является положительным числом или нулем. Попробуйте снова.`);
+                return NaN;
+            }
             
-            console.log('Массив успешно загружен из файла.');
+            //console.log('Массив успешно загружен из файла.');
             return number;
         });
 
         if (numbers.includes(NaN)) {
             return null;
         }
-
+        //console.log(filename);
     } catch (err) {
         console.error('Ошибка чтения массива из файла:');
         return null;
     }
+    console.log('Массив успешно загружен из файла.');
+    console.log('Загруженный массив:');
+    console.log(numbers);
+    return numbers;
 }
 
 function fileWork(callback, array) {
     let filename;
+    let result;
     while (true) {
         console.log("Напишите путь до файла");
         filename = readline.question('');
 
         if (isValidFilename(filename)) {
-            const result = callback(filename, array);
+            result = callback(filename, array);
             if (result === null) continue;
             break;
         }
@@ -147,7 +175,7 @@ function getDigit(number, position){
 }
 
 
-function RadixSort(array,amountOF){
+function radixSort(array,amountOF){
     let buffer;
 
     for(let j =0; j< amountOF;++j){
@@ -172,12 +200,21 @@ function RadixSort(array,amountOF){
 }
 
 
+function sort(array){
+    let max = Math.max(...array);
+    let amountOF = 0;
+
+    while (max>0) {
+        max = Math.floor(max / 10);
+        amountOF++;
+    }
+    
+    return radixSort(array, amountOF)
+}
 
 
 
-
-function menu() { // должно уметь разное заполнение разный выход данных в разных форматах и выход естесна
-    //выбрать заполнение один раз
+function menu() { 
     let array;
 
     console.log("Выберите способ заполнения:");
@@ -188,15 +225,15 @@ function menu() { // должно уметь разное заполнение �
         command = InputNumFromSTDIN();
         switch (command) {
             case 1:
-                console.log("файл");
+                console.log("");
                 array = fileWork(InputNumArrayFromFile);
                 break outerLoop;
             case 2:
-                console.log("консоль");
+                console.log("\nВведите неотрицательные числа через пробел");
                 array = InputNumArrayFromStDIN();
                 break outerLoop;
             case 3:
-                console.log("рандом");
+                console.log("\n");
                 array = InputRandomNumArray()
                 break outerLoop;
             default:
@@ -206,20 +243,7 @@ function menu() { // должно уметь разное заполнение �
     }
     
     //сортировка
-    console.log(array);
-    
-    let max = Math.max(...array);
-    let amountOF = 0;
-    console.log(max);
-
-    while (max>0) {
-        max = Math.floor(max / 10);
-        amountOF++;
-    }
-    console.log(amountOF);
-
-    array = RadixSort(array,amountOF);
-    
+    array = sort(array);
     
     // сохранение
     console.log(array);
@@ -228,19 +252,13 @@ function menu() { // должно уметь разное заполнение �
     outerLoop:
     while (true) {
         let command;
-        console.log("1 - сохранение в файл\n ");
+        console.log("1 - сохранение в файл\n2 - выход из меню ");
         command = InputNumFromSTDIN();
         switch (command) {
             case 1:
-                console.log("файл");
                 fileWork(saveArrayToFile, array);
                 break outerLoop;
             case 2:
-                console.log("консоль");
-                array = InputNumArrayFromStDIN();
-                break outerLoop;
-            case 3:
-                console.log("выход из меню");
                 break outerLoop;
             default:
                 console.log("команда не найдена");
@@ -277,9 +295,13 @@ function main() {
     }
 }
 
-main();
 
 
+if (process.env.NODE_ENV !== 'test') {
+    // Код выполняется только если не в тестовой среде
+    main();
+  }
+module.exports = { isValidFilename, InputNumFromSTDIN, InputNumArrayFromStDIN,InputRandomNumArray };
  
 
 
