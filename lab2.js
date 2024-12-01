@@ -26,7 +26,8 @@ function isValidFilename(filename) {
         return false;
     }
 
-    return true; // Если все проверки пройдены
+
+    return true; // Если все проверки пройдены/
 }
 
 function isValidNum(number){
@@ -245,7 +246,7 @@ if (process.env.NODE_ENV !== 'test') {
     // Код выполняется только если не в тестовой среде
     main();
   }
-module.exports = { isValidFilename, InputNumFromSTDIN, InputNumArrayFromStDIN,InputRandomNumArray };
+module.exports = { isValidFilename, InputNumFromSTDIN, InputNumArrayFromStDIN,InputRandomNumArray }
  
 
 
