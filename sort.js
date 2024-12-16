@@ -33,7 +33,7 @@ function radixSort(array,amountOF){
 }
 
 
-function sort(array){
+function sort_(array){
     let max = Math.max(...array);
     let amountOF = 0;
 
@@ -44,4 +44,4 @@ function sort(array){
 
     return radixSort(array, amountOF)
 }
-module.exports = { sort,radixSort,getDigit };
+module.exports = { sort_,radixSort,getDigit };

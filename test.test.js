@@ -1,125 +1,251 @@
-const {isValidFilename} = require('./lab2.js');
+const { sort_ } = require('./sort.js');
+// const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
-beforeAll(() => {
-    // Замокаем console.log
-    jest.spyOn(console, 'log').mockImplementation(() => {});
-  });
-  
-  afterAll(() => {
-    // Восстанавливаем console.log после тестов
-    console.log.mockRestore();
-  });
+const pool = mysql.createPool({
+  host: 'localhost',
+  user: 'array_user',
+  password: 'password',
+  database: 'my_database',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
 
+function generateRandomArray(size) {
+    return Array.from({ length: size }, () => Math.floor(Math.random() * 1000));
+}
 
-describe('isValidFilename', () => {
-    test('валидные имена', () => {
-        expect(isValidFilename('file.json')).toBe(true);
-        expect(isValidFilename('my_file.json')).toBe(true);
-        expect(isValidFilename('another.file.json')).toBe(true);
-        expect(isValidFilename('file123.json')).toBe(true);
-    });
+test('Добавление 100 массивов', async () => {
+    const connection = await pool.getConnection();
+    const startTime = Date.now();
 
-    test('недопустимые символы', () => {
-        expect(isValidFilename('file<.json')).toBe(false);
-        expect(isValidFilename('file>.json')).toBe(false);
-        expect(isValidFilename('file:.json')).toBe(false);
-        expect(isValidFilename('file/.json')).toBe(false);
-        expect(isValidFilename('file\\.json')).toBe(false);
-        expect(isValidFilename('file|.json')).toBe(false);
-        expect(isValidFilename('file?.json')).toBe(false);
-        expect(isValidFilename('file*.json')).toBe(false);
-    });
+    try {
+        for (let i = 0; i < 100; i++) {
+            const randomArray = generateRandomArray(10); // 10 элементов
+            await connection.query('INSERT INTO Arrays (array) VALUES (?)', [JSON.stringify(randomArray)]);
+        }
+        const endTime = Date.now();
+        console.log(`Добавлено 100 массивов за ${(endTime - startTime) / 1000}s`);
+        expect(true).toBe(true);
+    } catch (error) {
+        console.error('Ошибка добавления массивов:', error);
+        expect(false).toBe(true);
+    } finally {
+        connection.release();
+    }
+});
 
-    test('имя начинается с пробела или точки', () => {
-        expect(isValidFilename(' .json')).toBe(false);
-        expect(isValidFilename('.file.json')).toBe(false);
-    });
+test('Выгрузка и сортировка 100 случайных массивов', async () => {
+    const connection = await pool.getConnection();
+    const startTime = Date.now();
 
-    test('недопустимые имена в Windows', () => {
-        expect(isValidFilename('CON')).toBe(false);
-        expect(isValidFilename('con.json')).toBe(false);
-        expect(isValidFilename('PRN')).toBe(false);
-        expect(isValidFilename('COM1')).toBe(false);
-    });
+    try {
+        const [rows] = await connection.query('SELECT * FROM Arrays ORDER BY RAND() LIMIT 100');
+        // Преобразуем строку в массив, если это невалидный JSON
+        // Преобразуем строку в массив
+        const arrays = rows.map(row => {
+            try {
+                //console.log('Строка перед парсингом:', row.array); // Log the raw string
+                
+                ar = row.array;
 
-    test('недопустимые расширения', () => {
-        expect(isValidFilename('file.txt')).toBe(false);
-        expect(isValidFilename('file')).toBe(false);
-        expect(isValidFilename('file.json.txt')).toBe(false);
-    });
+                // Map over parsed array to ensure all elements are numbers
+                return ar
+            } catch (error) {
+                console.error('Ошибка парсинга строки:', row.array);
+                throw new Error(`Некорректный JSON: ${row.array}`);
+            }
+        });
 
-    test('пустое имя', () => {
-        expect(isValidFilename('')).toBe(false);
-    });
+        const sortStart = Date.now();
+        const sortedArrays = arrays.map(array => sort_(array));
+        const sortEnd = Date.now();
+
+        const endTime = Date.now();
+        console.log(`Сортировка завершена за ${(sortEnd - sortStart) / 1000}s`);
+        console.log(`Общее время работы: ${(endTime - startTime) / 1000}s`);
+        console.log(`Среднее время работы с 1 массивом: ${(endTime - startTime) / arrays.length / 1000}s`);
+        expect(sortedArrays.length).toBe(100);
+    } catch (error) {
+        console.error('Ошибка сортировки массивов:', error);
+        expect(false).toBe(true);
+    } finally {
+        connection.release();
+    }
+});
+
+test('Очистка базы данных', async () => {
+    const connection = await pool.getConnection();
+    const startTime = Date.now();
+
+    try {
+        const [result] = await connection.query('DELETE FROM Arrays');
+        const endTime = Date.now();
+
+        console.log(`База данных очищена за ${(endTime - startTime) / 1000}s`);
+        expect(result.affectedRows).toBeGreaterThan(0);
+    } catch (error) {
+        console.error('Ошибка очистки базы данных:', error);
+        expect(false).toBe(true);
+    } finally {
+        connection.release();
+    }
 });
 
 
-const readline = require('readline-sync');
 
-jest.mock('readline-sync'); // Мокаем модуль readline-sync
+test('Добавление 1000 массивов', async () => {
+    const connection = await pool.getConnection();
+    const startTime = Date.now();
 
-describe('InputNumFromSTDIN ', () => {
-    let { InputNumFromSTDIN } = require('./lab2.js');
+    try {
+        for (let i = 0; i < 1000; i++) {
+            const randomArray = generateRandomArray(10); // 10 элементов
+            await connection.query('INSERT INTO Arrays (array) VALUES (?)', [JSON.stringify(randomArray)]);
+        }
+        const endTime = Date.now();
+        console.log(`Добавлено 1000 массивов за ${(endTime - startTime) / 1000}s`);
+        expect(true).toBe(true);
+    } catch (error) {
+        console.error('Ошибка добавления массивов:', error);
+        expect(false).toBe(true);
+    } finally {
+        connection.release();
+    }
+});
 
-    beforeEach(() => {
-        jest.clearAllMocks();  // Очищаем моки перед каждым тестом
-    });
+test('Выгрузка и сортировка 100 случайных массивов', async () => {
+    const connection = await pool.getConnection();
+    const startTime = Date.now();
 
-    test('должен вернуть положительное число', () => {
-        readline.question.mockReturnValueOnce('42');  // Мокаем ввод '42'
-        
-        const result = InputNumFromSTDIN();
-        expect(result).toBe(42);  // Проверяем, что результат соответствует ожидаемому числу
-    });
+    try {
+        const [rows] = await connection.query('SELECT * FROM Arrays ORDER BY RAND() LIMIT 100');
+        const arrays = rows.map(row => {
+            try {
+                //console.log('Строка перед парсингом:', row.array); // Log the raw string
+                
+                ar = row.array;
 
-    test('должен продолжать запрашивать ввод до корректного числа', () => {
-        readline.question
-            .mockReturnValueOnce('abc')  // Первый ввод неправильный
-            .mockReturnValueOnce('-1')   // Второй ввод неправильный (отрицательное число)
-            .mockReturnValueOnce('20');  // Третий ввод правильный
+                // Map over parsed array to ensure all elements are numbers
+                return ar
+            } catch (error) {
+                console.error('Ошибка парсинга строки:', row.array);
+                throw new Error(`Некорректный JSON: ${row.array}`);
+            }
+        });
 
-        const result = InputNumFromSTDIN();
-        expect(result).toBe(20);  // Ожидаем, что результат будет 20 после корректного ввода
-    });
+        const sortStart = Date.now();
+        const sortedArrays = arrays.map(array => sort_(array));
+        const sortEnd = Date.now();
+
+        const endTime = Date.now();
+        console.log(`Сортировка завершена за ${(sortEnd - sortStart) / 1000}s`);
+        console.log(`Общее время работы: ${(endTime - startTime) / 1000}s`);
+        console.log(`Среднее время работы с 1 массивом: ${(endTime - startTime) / arrays.length / 1000}s`);
+        expect(sortedArrays.length).toBe(100);
+    } catch (error) {
+        console.error('Ошибка сортировки массивов:', error);
+        expect(false).toBe(true);
+    } finally {
+        connection.release();
+    }
+});
+
+test('Очистка базы данных', async () => {
+    const connection = await pool.getConnection();
+    const startTime = Date.now();
+
+    try {
+        const [result] = await connection.query('DELETE FROM Arrays');
+        const endTime = Date.now();
+
+        console.log(`База данных очищена за ${(endTime - startTime) / 1000}s`);
+        expect(result.affectedRows).toBeGreaterThan(0);
+    } catch (error) {
+        console.error('Ошибка очистки базы данных:', error);
+        expect(false).toBe(true);
+    } finally {
+        connection.release();
+    }
 });
 
 
 
+test('Добавление 10000 массивов', async () => {
+    const connection = await pool.getConnection();
+    const startTime = Date.now();
 
+    try {
+        for (let i = 0; i < 10000; i++) {
+            const randomArray = generateRandomArray(10); // 10 элементов
+            await connection.query('INSERT INTO Arrays (array) VALUES (?)', [JSON.stringify(randomArray)]);
+        }
+        const endTime = Date.now();
+        console.log(`Добавлено 10000 массивов за ${(endTime - startTime) / 1000}s`);
+        expect(true).toBe(true);
+    } catch (error) {
+        console.error('Ошибка добавления массивов:', error);
+        expect(false).toBe(true);
+    } finally {
+        connection.release();
+    }
+});
 
+test('Выгрузка и сортировка 100 случайных массивов', async () => {
+    const connection = await pool.getConnection();
+    const startTime = Date.now();
 
+    try {
+        const [rows] = await connection.query('SELECT * FROM Arrays ORDER BY RAND() LIMIT 100');
+        const arrays = rows.map(row => {
+            try {
+                //console.log('Строка перед парсингом:', row.array); // Log the raw string
+                
+                ar = row.array;
 
-const { InputNumArrayFromStDIN } = require('./lab2.js');
-describe('InputNumArrayFromSTDIN', () => {
+                // Map over parsed array to ensure all elements are numbers
+                return ar
+            } catch (error) {
+                console.error('Ошибка парсинга строки:', row.array);
+                throw new Error(`Некорректный JSON: ${row.array}`);
+            }
+        });
 
-    beforeEach(() => {
-        jest.clearAllMocks();  // Очищаем моки перед каждым тестом
-    });
+        const sortStart = Date.now();
+        console.log(arrays);
+        const sortedArrays = arrays.map(array => sort_(array));
+        const sortEnd = Date.now();
 
-    test('должен вернуть массив с положительными числами', () => {
-        readline.question.mockReturnValue('10 20 30');  // Мокаем ввод '10 20 30'
-        
-        const result = InputNumArrayFromStDIN();
-        expect(result).toEqual([10, 20, 30]);  // Проверяем, что результат — массив с числами
-    });
+        const endTime = Date.now();
+        console.log(`Сортировка завершена за ${(sortEnd - sortStart) / 1000}s`);
+        console.log(`Общее время работы: ${(endTime - startTime) / 1000}s`);
+        console.log(`Среднее время работы с 1 массивом: ${(endTime - startTime) / arrays.length / 1000}s`);
+        expect(sortedArrays.length).toBe(100);
+    } catch (error) {
+        console.error('Ошибка сортировки массивов:', error);
+        expect(false).toBe(true);
+    } finally {
+        connection.release();
+    }
+});
 
-    test('должен вернуть массив с одним положительным числом', () => {
-        readline.question.mockReturnValue('42');  // Мокаем ввод '42'
-        
-        const result = InputNumArrayFromStDIN();
-        expect(result).toEqual([42]);  // Проверяем, что результат — массив с числом 42
-    });
+test('Очистка базы данных', async () => {
+    const connection = await pool.getConnection();
+    const startTime = Date.now();
 
-    test('должен продолжать запрашивать ввод до корректного массива', () => {
-        readline.question
-            .mockReturnValueOnce('abc')  // Первый ввод неправильный
-            .mockReturnValueOnce('-1')   // Второй ввод неправильный (отрицательное число)
-            .mockReturnValueOnce('10 abs 30')// Третий ввод правильный
-            .mockReturnValueOnce('10 20 30');  
+    try {
+        const [result] = await connection.query('DELETE FROM Arrays');
+        const endTime = Date.now();
 
-        const result = InputNumArrayFromStDIN();
-        expect(result).toEqual([10, 20, 30]);  // Ожидаем, что результат будет массивом [10, 20, 30]
-    });
+        console.log(`База данных очищена за ${(endTime - startTime) / 1000}s`);
+        expect(result.affectedRows).toBeGreaterThan(0);
+    } catch (error) {
+        console.error('Ошибка очистки базы данных:', error);
+        expect(false).toBe(true);
+    } finally {
+        connection.release();
+    }
 });
 
 

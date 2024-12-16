@@ -1,0 +1,272 @@
+body {
+    margin: 0;
+    font-family: Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-color: #f5ebeb9d;
+}
+
+.container {
+    display: grid;
+margin-top: 30px;
+margin-bottom: 45px;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    border: 1px solid #ddd;
+    border-radius: 9px;
+    /* gap: 20px; */
+    width: 90%;
+    max-width: 1200px;
+    height: 90%;
+    background-color: #ffffff;
+
+}
+
+@media (max-width: 860px) {
+    .container {
+        grid-template-columns: 1fr;      /* 1 колонка */
+        grid-template-rows: 1fr 1fr 1fr 1fr; /* 4 строки */
+    }
+}
+.area {
+    padding: 15px;
+    max-height: 356px;
+    max-width: 630px;
+}
+
+#database-section{
+    width: 100%;
+}
+
+
+
+/*************************************************************************************************/
+.header-and-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+#array-section {
+    padding-right: 100px;
+
+
+}
+#sorted-array-header-and-buttons{
+    padding-right: 85px;
+
+}
+
+
+h2 {
+    margin-top: 0;
+    font-size: 1.5em;
+    color: #333;
+}
+
+textarea {
+    width: 100%;
+    max-width: 460px;
+    max-height: 250px;
+    height: auto;
+    min-height: 150px;
+    resize: vertical;
+    font-family: Arial, sans-serif;
+    border-radius: 9px;
+
+    font-size: 16px;
+    padding: 10px;
+    border: none;
+
+}
+
+#array-input {
+
+    /* Adjust the maximum width */
+    /* Ensure a minimum height */
+    /* Allows vertical resizing only */
+    border: 2px solid #ccccccc7;
+    /* border-radius: 5px; */
+    box-shadow: 0 2px px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#array-input:focus {
+    border-color: #0078d7;
+    box-shadow: 0 0 6px rgba(0, 120, 215, 0.5);
+    outline: none;
+}
+
+#sorted-array[readonly] {
+    cursor: default;
+    resize: none;
+    outline: none;
+    font-family: 'Courier New', Courier, monospace;
+    /* Шрифт фиксированной ширины */
+    line-height: 1.5;
+    /* Шрифт фиксированной ширины */
+    /* white-space: pre-wrap; 
+     */
+    word-wrap: break-word;
+    /* Разрыв длинных слов */
+    text-align: left;
+    width: 100%;
+
+}
+
+
+
+
+.save-btn {
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+
+    /* Размер и отступы */
+
+    padding: 8px 15px 25px;
+    white-space: nowrap;
+
+
+    /* Границы и фон */
+    height: 32px;
+    border: 1.3px solid #d1d1d1;
+    border-radius: 9px;
+    background-color: #f8f8f8;
+    color: #333;
+
+    /* Текст */
+    font-weight: 500;
+    font-size: 0.95em;
+    text-align: center;
+    vertical-align: middle;
+
+    /* Переходы для плавных изменений */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+}
+
+/* Эффект при наведении */
+.save-btn:hover {
+    background-color: #f1f0f0;
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+    transform: translateY(-1px);
+    border-color: #0078d7;
+    box-shadow: 0 0 6px rgba(0, 120, 215, 0.5);
+}
+
+/* Эффект при нажатии */
+.save-btn:active {
+    background-color: #dcdcdc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(0);
+}
+
+#DB-header-and-buttons{
+    margin-right: 24px;
+    padding-right: 24px;
+}
+/*******************************************************************************************************/
+
+.table-container {
+    max-height: 270px;  /* Ограничиваем высоту контейнера */
+    overflow-y: auto;   /* Вертикальная прокрутка появляется, если таблица слишком большая */
+    width: 100%;
+    max-width: 550px;
+    box-sizing: border-box; /* Учитывает отступы и границы при расчете размеров */
+    padding-right: 1em;
+}
+
+td {
+    padding-right: 1em;
+
+}
+
+#table-body{
+    margin-top: 2em;
+}
+
+thead {
+    font-weight: 550;
+
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+th {
+    background-color: #f4f4f4;
+    text-align: left;
+}
+
+td,
+th {
+    vertical-align: middle;
+}
+
+.row {
+    position: relative; 
+    display: flex;
+    justify-content: space-between;
+    /* Распределяем элементы по краям */
+    align-items: center;
+    /* Выравниваем элементы по центру вертикально */
+    width: 97%;
+}
+
+.menu {
+    display: none;
+    position: absolute ;
+    top: 100%; /* Меню будет располагаться под триггером */
+    right: 0;  /* Меню будет выравниваться по правому краю триггера */
+    background: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.menu button {
+    background: none;
+    border: none;
+    padding: 8px 10px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+
+.menu button:hover {
+    background-color: #f0f0f0;
+}
+
+.menu-trigger {
+    cursor: pointer;
+    color: #888;
+    float: right;
+    min-width: 30px;
+    text-align: center;
+}
+
+.row-button {
+    cursor: pointer;
+    text-align: left;
+    color: #000000;
+    border: none;
+    background: none;
+    width: 100%;
+    line-height: 1em;
+    /* padding-top: px; */
+    padding-bottom: 1px;
+    font-size: 0.98em;
+}
+
+.row-button:hover {
+    background-color: rgba(128, 128, 128, 0.329);
+    cursor: pointer;
+}
+.row-button:active {
+    background-color: rgba(100, 100, 100, 0.42);
+    /* Более тёмный серый при нажатии */
+}
+
