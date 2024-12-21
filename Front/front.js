@@ -11,10 +11,8 @@ function addRow(array) {
             <td>
                 <div class="row">
                     <button class="row-button" onclick="convertToInput(this)">${arrayContent}</button>
-                    <span class="menu-trigger">⋮</span>
-                    <div class="menu">
-                        <button onclick="deleteRow('${rowId}')">Удалить строку</button>
-                    </div>
+                    <button class="menu-trigger" onclick="deleteRow('${rowId}')">Удалить</button>
+
                 </div>
             </td>
         </tr>
@@ -110,15 +108,15 @@ function getArrayFromRow(rowId) {
 
 function isValidNum(number) {
     if (isNaN(number)) {
-        console.log(`Ошибка: содержимое "${number}" не является числом. Попробуйте снова.`);
+        window.alert(`Ошибка: содержимое  не является числом. Попробуйте снова.`);
         return false;
     }
     if (number < 0) {
-        console.log(`Ошибка: содержимое "${number}" не является положительным числом или нулем. Попробуйте снова.`);
+       window.alert(`Ошибка: содержимое не является положительным числом или нулем. Попробуйте снова.`);
         return false;
     }
     if (number - Math.floor(number) !== 0) {
-        console.log(`Ошибка: содержимое "${number}" не является целочисленным числом или нулем. Попробуйте снова.`);
+        window.alert(`Ошибка: содержимое не является целочисленным числом или нулем. Попробуйте снова.`);
         return false;
     }
     return true;
@@ -158,7 +156,7 @@ google.charts.load('current', {packages: ['corechart']});
 google.charts.setOnLoadCallback(drawChart);
 
 function drawChart(inputData) {
-    // Пример входного массива
+
 
   
     // Преобразуем массив в формат для графика
@@ -221,9 +219,6 @@ function sort() {
             });
         }
     }).catch(error => {
-        // if (error.message === "email-already-exists") {
-        //     ShowProblem("Аккаунт на такую почту уже зарегистрирован");
-        // }
     })
 }
 

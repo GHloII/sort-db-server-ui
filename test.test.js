@@ -42,15 +42,10 @@ test('Выгрузка и сортировка 100 случайных масси
 
     try {
         const [rows] = await connection.query('SELECT * FROM Arrays ORDER BY RAND() LIMIT 100');
-        // Преобразуем строку в массив, если это невалидный JSON
-        // Преобразуем строку в массив
         const arrays = rows.map(row => {
             try {
-                //console.log('Строка перед парсингом:', row.array); // Log the raw string
                 
                 ar = row.array;
-
-                // Map over parsed array to ensure all elements are numbers
                 return ar
             } catch (error) {
                 console.error('Ошибка парсинга строки:', row.array);
@@ -123,11 +118,8 @@ test('Выгрузка и сортировка 100 случайных масси
         const [rows] = await connection.query('SELECT * FROM Arrays ORDER BY RAND() LIMIT 100');
         const arrays = rows.map(row => {
             try {
-                //console.log('Строка перед парсингом:', row.array); // Log the raw string
                 
                 ar = row.array;
-
-                // Map over parsed array to ensure all elements are numbers
                 return ar
             } catch (error) {
                 console.error('Ошибка парсинга строки:', row.array);
@@ -200,11 +192,9 @@ test('Выгрузка и сортировка 100 случайных масси
         const [rows] = await connection.query('SELECT * FROM Arrays ORDER BY RAND() LIMIT 100');
         const arrays = rows.map(row => {
             try {
-                //console.log('Строка перед парсингом:', row.array); // Log the raw string
                 
                 ar = row.array;
 
-                // Map over parsed array to ensure all elements are numbers
                 return ar
             } catch (error) {
                 console.error('Ошибка парсинга строки:', row.array);
