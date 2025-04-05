@@ -11,7 +11,7 @@ function addRow(array) {
             <td>
                 <div class="row">
                     <button class="row-button" onclick="convertToInput(this)">${arrayContent}</button>
-                    <button class="menu-trigger" onclick="deleteRow('${rowId}')">Удалить</button>
+                    <button class="menu-trigger" onclick="deleteRow('${rowId}')">✕</button>
 
                 </div>
             </td>
@@ -20,6 +20,10 @@ function addRow(array) {
     table.insertAdjacentHTML('beforeend', newRow);
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    const button = document.getElementById('updateDB');
+    button.click(); // Эмулируем клик по кнопке
+  });
 
 function updateDB() {
     const tableBody = document.getElementById('table-body'); 
@@ -136,6 +140,7 @@ function getArrayFromTextarea(ID) {
     let input = document.getElementById(ID).value;
 
     let numbers = input.split(' ').map(number => {
+        if (number === ' ') return NaN;
         number = Number(number);
         if (!isValidNum(number)) {
             return NaN;
